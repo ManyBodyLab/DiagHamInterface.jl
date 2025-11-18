@@ -1,0 +1,22 @@
+"""
+Placeholder for a short summary about DiagHamInterface.
+"""
+module DiagHamInterface
+
+export read_matrix_elements, read_matrix_from_txt, write_to_txt
+export execute_diagham_script
+
+using DelimitedFiles 
+using Format 
+using SparseArrays 
+using Preferences
+
+include("utility/diagham_path.jl")
+include("utility/execute_script.jl")
+include("utility/fileending.jl")
+include("utility/numbers.jl")
+
+include("MatrixElements/read.jl")
+include("Hamiltonian/hamiltonian_txt.jl")
+
+end
