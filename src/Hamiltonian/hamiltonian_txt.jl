@@ -19,7 +19,7 @@ function write_to_txt(Ham::SparseMatrixCSC, filename::String; atol::Real=eps(rea
     filename = fix_fileending(filename, ".txt")
     backup_file!(filename)
 
-    cols, rows, vals = findnz(permutedims(Ham,(2,1)))   ## DiagHam uses CSR instead of CSC
+    cols, rows, vals = findnz(permutedims(Ham,(2,1)))   ## DiagHam uses CSR instead of CSC, this way the rows are sorted and per row the columns are sorted
     open(filename, "w") do io
         for i in eachindex(vals)
             println(io, "$(rows[i]-1) $(cols[i]-1) $(write_number_space(vals[i]; atol=atol))")
