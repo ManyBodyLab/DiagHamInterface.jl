@@ -1,6 +1,7 @@
 function write_to_txt(Ham::AbstractMatrix{T}, filename::String; atol::Real=eps(real(float(T)))) where {T<:Number}
     filename = fix_fileending(filename, ".txt")
-
+    backup_file!(filename)
+    
     open(filename, "w") do io
         for i in axes(Ham, 1)   ## This is sorted by rows first for DiagHam.
             for j in axes(Ham, 2)
@@ -15,9 +16,9 @@ function write_to_txt(Ham::AbstractMatrix{T}, filename::String; atol::Real=eps(r
 end
 
 function write_to_txt(Ham::SparseMatrixCSC, filename::String; atol::Real=eps(real(float(eltype(Ham)))))
-    if !endswith(filename, ".txt")
-        filename *= ".txt"
-    end
+    filename = fix_fileending(filename, ".txt")
+    backup_file!(filename)
+
     rows, cols, vals = findnz(Ham)
     open(filename, "w") do io
         for i in eachindex(vals)
