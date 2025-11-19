@@ -70,7 +70,7 @@ function format_kinetic(label, indices, coeffs; full_single_particle::Bool=false
 
     return label, indices, coeffs
 end
-function write_matrix_elements(label, indices, coeffs, file_name::String; dropband::Bool=false, full_single_particle::Bool=false)
+function write_matrix_elements(label, indices, coeffs, file_name::String; dropband::Bool = false, full_single_particle::Bool = false)
     N_body_interaction = div(length(unique([parse(Int, split(h,"_")[2]) for h in label])), 2)
     matrix_element_name = N_body_interaction == 1 ? "one_body_term" : "matrix_element"
 
