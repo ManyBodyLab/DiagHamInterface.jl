@@ -9,7 +9,10 @@ function read_matrix_elements(
         Vs = Vs[:, 1:(end - 1)]
     end
     coeffs = read_number.(Vs[:, end])
-    if norm(imag.(coeffs))<atol*norm(coeffs)
+
+    imag_part = sum(abs2,imag.(coeffs))/sum(abs2,coeffs)
+    @show imag_part
+    if sqrt(imag_part) < atol
         coeffs = real.(coeffs)
     end
     coeffs = convert(Vector{typeof(coeffs[1])}, coeffs)
