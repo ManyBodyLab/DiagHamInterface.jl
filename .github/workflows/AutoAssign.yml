@@ -20,4 +20,6 @@ jobs:
         with:
           assignees: 'Copilot'
           github_token: '${{ secrets.GITHUB_TOKEN }}'
+          allow_self_assign: 'true'
+          allow_no_assignees: 'true'
           assignment_options: 'ISSUE,PULL_REQUEST'
