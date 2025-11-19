@@ -4,7 +4,7 @@
 
 | **Documentation** | **Digital Object Identifier** | **Downloads** |
 |:-----------------:|:-----------------------------:|:-------------:|
-| [![][docs-stable-img]][docs-stable-url] [![][docs-dev-img]][docs-dev-url] | | [![DOI][doi-img]][doi-url] | [![Downloads][downloads-img]][downloads-url]
+| [![][docs-stable-img]][docs-stable-url] [![][docs-dev-img]][docs-dev-url] | [![DOI][doi-img]][doi-url] | [![Downloads][downloads-img]][downloads-url]
 
 | **Build Status** | **PkgEval** | **Coverage** | **Style Guide** | **Quality assurance** |
 |:----------------:|:-----------:|:------------:|:---------------:|:---------------------:|

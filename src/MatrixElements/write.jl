@@ -81,7 +81,7 @@ function matrix_elements_to_diagham(label, indices, coeffs, file_name::String; d
     # Finally store
     fid = open(file_name, "w")
     writedlm(fid, ["#" label... matrix_element_name], " ")
-    writedlm(fid, cat(indices, reformat_coefficients.(coeffs); dims=2), " ")
+    writedlm(fid, cat(indices, write_number.(coeffs); dims=2), " ")
     close(fid)
 
     return file_name
