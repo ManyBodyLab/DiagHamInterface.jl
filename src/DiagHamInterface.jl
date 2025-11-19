@@ -6,7 +6,6 @@ module DiagHamInterface
 export read_matrix_elements, read_matrix_from_txt, write_to_txt
 export write_matrix_elements
 export execute_diagham_script
-export Species
 
 using DelimitedFiles 
 using Format 
