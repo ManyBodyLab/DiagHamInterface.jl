@@ -2,8 +2,8 @@
 
 # DiagHamInterface.jl
 
-| **Documentation** | **Digital Object Identifier** | **Citation** | **Downloads** |
-|:-----------------:|:-----------------------------:|:------------:|:-------------:|
+| **Documentation** | **Digital Object Identifier** | **Downloads** |
+|:-----------------:|:-----------------------------:|:-------------:|
 | [![][docs-stable-img]][docs-stable-url] [![][docs-dev-img]][docs-dev-url] | | [![DOI][doi-img]][doi-url] | [![Downloads][downloads-img]][downloads-url]
 
 | **Build Status** | **PkgEval** | **Coverage** | **Style Guide** | **Quality assurance** |
@@ -40,20 +40,16 @@
 
 ## Installation
 
-The package can be installed through the Julia general registry, via the package manager:
+The package can be installed through github via the package manager:
 
 ```julia-repl
-pkg> add DiagHamInterface
+pkg> add git@github.com:ManyBodyLab/DiagHamInterface.jl.git
 ```
-
-## Citation
-
-See "Cite this repository" to the right or [`CITATION.cff`](CITATION.cff) for the relevant reference(s).
 
 ## Code Samples
 
 ````julia
-using DiagHamInterface: DiagHamInterface
+using DiagHamInterface
 ````
 
 Examples go here.
