@@ -11,7 +11,7 @@ function read_matrix_elements(
     coeffs = read_number.(Vs[:, end])
 
     imag_part = sum(abs2,imag.(coeffs))/sum(abs2,coeffs)
-    @show imag_part
+
     if sqrt(imag_part) < atol
         coeffs = real.(coeffs)
     end
