@@ -3,14 +3,17 @@ function execute_diagham_script(execute::AbstractString; kwargs...)
 end
 
 function execute_diagham_script(execute::AbstractVector{<:AbstractString}; 
-    diagham_path::AbstractString=diagham_path,
-    ignorestatus::Bool=false, 
-    detach::Bool=false, 
-    windows_verbatim::Bool=false, 
-    windows_hide::Bool=false, 
-    env=nothing, 
-    dir="",
-    kwargs...)
+        diagham_path::AbstractString=diagham_path,
+        ignorestatus::Bool=false, 
+        detach::Bool=false, 
+        windows_verbatim::Bool=false, 
+        windows_hide::Bool=false, 
+        env=nothing, 
+        dir="",
+        kwargs...
+    )
+    warn_about_diagham_path()
+
     ex_file = first(execute)
     execute[1] = joinpath(diagham_path, ex_file)
     execute = prod(execute)
