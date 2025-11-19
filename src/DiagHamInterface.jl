@@ -3,15 +3,16 @@ Placeholder for a short summary about DiagHamInterface.
 """
 module DiagHamInterface
 
+export read_matrix_from_txt, write_to_txt
+export write_matrix_elements
+export execute_diagham_script
+
 using DelimitedFiles 
 using Format 
 using SparseArrays 
 using Preferences
 using HDF5
 
-export read_matrix_from_txt, write_to_txt
-export write_matrix_elements
-export execute_diagham_script
 
 include("utility/backup.jl")
 include("utility/diagham_path.jl")
@@ -21,6 +22,7 @@ include("utility/numbers.jl")
 include("utility/species.jl")
 
 include("MatrixElements/read.jl")
+include("MatrixElements/write.jl")
 include("Hamiltonian/hamiltonian_txt.jl")
 
 end
