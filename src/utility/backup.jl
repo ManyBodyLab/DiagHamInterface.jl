@@ -1,5 +1,4 @@
 function backup_file!(filename::AbstractString) 
-    filename = copy(filename)
     if isfile(filename)
         backup_name = filename * ".bak"
         if isfile(backup_name)
@@ -11,4 +10,5 @@ function backup_file!(filename::AbstractString)
         end
         mv(filename, backup_name; force=true)
     end
+    return nothing
 end
