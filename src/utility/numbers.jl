@@ -1,5 +1,5 @@
-const _e_formatters = [generate_formatter("%.$(p)e") for p in 0:20]
-const _f_formatters = [generate_formatter("%.$(p)f") for p in 0:20]
+const _e_formatters = [generate_formatter("%.$(p)e") for p in 0:40]
+const _f_formatters = [generate_formatter("%.$(p)f") for p in 0:40]
 
 """
     absprint(x; atol=1e-14, mode=:auto, maxdigits=20)
