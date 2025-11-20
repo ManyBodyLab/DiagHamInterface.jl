@@ -14,7 +14,7 @@ const diagham_path = expanduser(@load_preference("diagham_path", "~/development/
 function warn_about_diagham_path()
     # Set the default path for DiagHam
     if !@has_preference("diagham_path")
-        @info "Setting default DiagHam path to $(diagham_path), if you want to change it,\n use the HybridWanniers.set_diagham_path(path::String) function and restart your Julia session." maxlog=1
+        @info "Setting default DiagHam path to $(diagham_path), if you want to change it,\n use the DiagHamInterface.set_diagham_path(path::String) function and restart your Julia session." maxlog=1
     end
     return nothing
 end
