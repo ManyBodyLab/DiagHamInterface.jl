@@ -1,6 +1,6 @@
 name = "DiagHamInterface"
 uuid = "2f27495d-c82b-46d5-b81b-1bb9aa58c4d5"
-version = "0.1.0"
+version = "1.0.0"
 authors = ["Andreas Feuerpfeil <development@manybodylab.com>"]
 
 [deps]

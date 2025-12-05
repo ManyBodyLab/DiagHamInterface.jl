@@ -2,4 +2,4 @@
 DiagHamInterface = "2f27495d-c82b-46d5-b81b-1bb9aa58c4d5"
 
 [compat]
-DiagHamInterface = "0.1"
+DiagHamInterface = "1.0"
