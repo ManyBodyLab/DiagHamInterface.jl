@@ -66,6 +66,8 @@ const TEST_ATOL_COMPLEX = 1.0e-10
             # Read back and verify coefficients are preserved
             header, read_indices, read_coeffs = read_matrix_elements(filename)
             @test all(isapprox.(read_coeffs, coeffs; atol = TEST_ATOL_REAL))
+            @test read_indices == indices
+            @test label == header
         end
     end
 
@@ -97,6 +99,11 @@ const TEST_ATOL_COMPLEX = 1.0e-10
 
             # Check that complex coefficients are preserved
             @test all(isapprox.(read_coeffs, coeffs; atol = TEST_ATOL_COMPLEX))
+            @test read_indices == indices
+            @test label == header
+
+            header, read_indices, read_coeffs = read_matrix_elements(filename; conjugate=true)
+            @test all(isapprox.(read_coeffs, conj.(coeffs); atol = TEST_ATOL_COMPLEX))
         end
     end
 
