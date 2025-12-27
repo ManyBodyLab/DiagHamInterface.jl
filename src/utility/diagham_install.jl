@@ -5,11 +5,11 @@ Checkout and build DiagHam from source. Returns the path to the build directory.
 
 Parameters are keyword-only and intended to be easily overridden from tests or user code.
 """
-function install_diagham(; 
+function install_diagham(;
         source_dir,
         build_dir = nothing,
         run_dir = nothing,
-        configure_options = ["--enable-fqhe","--enable-fti","--with-blas-libs=-lopenblas","--with-lapack-libs=","--enable-lapack"],
+        configure_options = ["--enable-fqhe", "--enable-fti", "--with-blas-libs=-lopenblas", "--with-lapack-libs=", "--enable-lapack"],
     )
     source_dir = expanduser(source_dir)
 

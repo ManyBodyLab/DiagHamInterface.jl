@@ -102,7 +102,7 @@ const TEST_ATOL_COMPLEX = 1.0e-10
             @test read_indices == indices
             @test label == header
 
-            header, read_indices, read_coeffs = read_matrix_elements(filename; conjugate=true)
+            header, read_indices, read_coeffs = read_matrix_elements(filename; conjugate = true)
             @test all(isapprox.(read_coeffs, conj.(coeffs); atol = TEST_ATOL_COMPLEX))
         end
     end

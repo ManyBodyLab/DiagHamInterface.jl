@@ -38,7 +38,7 @@ function ensure_diagham_installed()
 
     @info "DiagHam not installed, attempting installation..."
     try
-        install_diagham(;source_dir=DIAGHAM_SOURCE_DIR)
+        install_diagham(; source_dir = DIAGHAM_SOURCE_DIR)
     catch e
         @warn "Failed to install DiagHam: $e"
     end
