@@ -44,5 +44,3 @@ function ensure_diagham_installed()
     end
     return DIAGHAM_BUILD_DIR
 end
-
-ensure_diagham_installed()
