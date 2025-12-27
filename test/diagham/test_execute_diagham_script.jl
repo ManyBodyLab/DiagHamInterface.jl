@@ -8,7 +8,7 @@ include("setup.jl")
 
 @testset "execute_diagham_script (requires DiagHam)" begin
 
-    @test ensure_diagham_installed(DIAGHAM_BUILD_DIR) == DIAGHAM_BUILD_DIR
+    @test ensure_diagham_installed() == DIAGHAM_BUILD_DIR
     if diagham_available()
         # Set the DiagHam path for these tests
         @test DiagHamInterface.set_diagham_path(DIAGHAM_BUILD_DIR) == expanduser(DIAGHAM_BUILD_DIR) 
