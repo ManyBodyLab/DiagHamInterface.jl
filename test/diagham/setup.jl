@@ -9,115 +9,38 @@ const DIAGHAM_SOURCE_DIR = joinpath(dirname(@__DIR__), "diagham_source")
 const DIAGHAM_BUILD_DIR = joinpath(DIAGHAM_SOURCE_DIR, "build")
 const DIAGHAM_RUN_DIR = joinpath(DIAGHAM_BUILD_DIR, "run")
 
-"""
-    install_diagham()
+using DiagHamInterface: install_diagham
 
-Checkout and build DiagHam from source. Returns the path to the build directory.
-"""
-function install_diagham()
-    # Check if already built
-    if isdir(DIAGHAM_BUILD_DIR) && isfile(joinpath(DIAGHAM_BUILD_DIR, "FQHE", "src", "Programs", "FQHEOnTorus", "FQHETorusFermionsTwoBodyGeneric"))
-        @info "DiagHam already installed at $DIAGHAM_BUILD_DIR"
-        return DIAGHAM_BUILD_DIR
-    end
+# Delegate installation to the exported package function so tests and users
+# use the shared implementation. The test constants are still defined here
+# for convenience and passed to the package function below.
 
-    # Checkout DiagHam if not exists
-    if !isdir(DIAGHAM_SOURCE_DIR)
-        @info "Checking out DiagHam from SVN repository..."
-        mkdir(dirname(DIAGHAM_SOURCE_DIR))
-        run(`svn checkout https://www.nick-ux.org/diagham/svn/DiagHam/trunk $DIAGHAM_SOURCE_DIR`)
-    else
-        @info "DiagHam source already exists at $DIAGHAM_SOURCE_DIR"
-    end
-
-    # Check if it uses autotools or cmake
-    if isfile(joinpath(DIAGHAM_SOURCE_DIR, "CMakeLists.txt"))
-        # CMake-based build
-        if !isdir(DIAGHAM_BUILD_DIR)
-            mkdir(DIAGHAM_BUILD_DIR)
-        end
-
-        @info "Configuring DiagHam with CMake..."
-        cd(DIAGHAM_BUILD_DIR) do
-            run(`cmake $DIAGHAM_SOURCE_DIR -DBUILD_FQHE=ON`)
-        end
-
-        @info "Building DiagHam..."
-        cd(DIAGHAM_BUILD_DIR) do
-            nprocs = Sys.CPU_THREADS
-            run(`make -j$nprocs`)
-        end
-    elseif isfile(joinpath(DIAGHAM_SOURCE_DIR, "configure"))
-        # Autotools-based build (older DiagHam versions)
-        @info "Configuring DiagHam with autotools..."
-
-        if !isdir(DIAGHAM_BUILD_DIR)
-            mkdir(DIAGHAM_BUILD_DIR)
-        end
-
-        cd(DIAGHAM_BUILD_DIR) do
-            # Run configure from build dir pointing to source dir with FQHE and LAPACK enabled
-            configure_script = joinpath(DIAGHAM_SOURCE_DIR, "configure")
-            run(`$configure_script --enable-fqhe --enable-fti --with-blas-libs=-lopenblas --with-lapack-libs= --enable-lapack`)
-
-            @info "Building DiagHam..."
-            nprocs = Sys.CPU_THREADS
-            run(`make -j$nprocs`)
-        end
-    elseif isfile(joinpath(DIAGHAM_SOURCE_DIR, "configure.in")) || isfile(joinpath(DIAGHAM_SOURCE_DIR, "Makefile.am"))
-        # Need to run autoreconf first
-        @info "Running autoreconf to generate configure script..."
-        cd(DIAGHAM_SOURCE_DIR) do
-            run(`autoreconf -i`)
-        end
-
-        if !isdir(DIAGHAM_BUILD_DIR)
-            mkdir(DIAGHAM_BUILD_DIR)
-        end
-
-        cd(DIAGHAM_BUILD_DIR) do
-            # Run configure from build dir pointing to source dir with FQHE and LAPACK enabled
-            configure_script = joinpath(DIAGHAM_SOURCE_DIR, "configure")
-            run(`$configure_script --enable-fqhe --enable-fti --with-blas-libs=-lopenblas --with-lapack-libs= --enable-lapack`)
-
-            @info "Building DiagHam..."
-            nprocs = Sys.CPU_THREADS
-            run(`make -j$nprocs`)
-        end
-    else
-        error("Could not determine build system for DiagHam")
-    end
-
-    if !isdir(DIAGHAM_RUN_DIR)
-        mkdir(DIAGHAM_RUN_DIR)
-    end
-
-    @info "DiagHam installed successfully at $DIAGHAM_BUILD_DIR"
-    return DIAGHAM_BUILD_DIR
-end
-
-"""
-    diagham_available()
-
-Check if DiagHam is available (built and ready to use).
-"""
-function diagham_available()
-    # Check for common FQHE executables
+function diagham_available(build_dir::AbstractString = DIAGHAM_BUILD_DIR)
     possible_paths = [
-        joinpath(DIAGHAM_BUILD_DIR, "FQHE", "src", "Programs", "FQHEOnDisk", "FQHEDiskFermionsTwoBodyGeneric"),
-        joinpath(DIAGHAM_BUILD_DIR, "FQHE", "src", "Programs", "FQHEOnTorus", "FQHETorusFermionsTwoBodyGeneric"),
-        joinpath(DIAGHAM_BUILD_DIR, "FTI", "src", "Programs", "FTI", "FTIGenericInteractionFromFileTwoBands"),
-        joinpath(DIAGHAM_BUILD_DIR, "src", "Programs", "GenericHamiltonianDiagonalization"),
-        joinpath(DIAGHAM_BUILD_DIR, "src", "Programs", "GenericOverlap"),
+        joinpath(build_dir, "FQHE", "src", "Programs", "FQHEOnDisk", "FQHEDiskFermionsTwoBodyGeneric"),
+        joinpath(build_dir, "FQHE", "src", "Programs", "FQHEOnTorus", "FQHETorusFermionsTwoBodyGeneric"),
+        joinpath(build_dir, "FTI", "src", "Programs", "FTI", "FTIGenericInteractionFromFileTwoBands"),
+        joinpath(build_dir, "src", "Programs", "GenericHamiltonianDiagonalization"),
+        joinpath(build_dir, "src", "Programs", "GenericOverlap"),
     ]
     return any(isfile, possible_paths)
 end
 
-if !diagham_available()
+
+"""
+Call the package `install_diagham` with the test-local defaults.
+"""
+function ensure_diagham_installed()
+    if diagham_available(DIAGHAM_BUILD_DIR)
+        @info "DiagHam already installed at $DIAGHAM_BUILD_DIR"
+        return DIAGHAM_BUILD_DIR
+    end
+
     @info "DiagHam not installed, attempting installation..."
     try
-        install_diagham()
+        install_diagham(; source_dir = DIAGHAM_SOURCE_DIR)
     catch e
         @warn "Failed to install DiagHam: $e"
     end
+    return DIAGHAM_BUILD_DIR
 end
