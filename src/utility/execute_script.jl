@@ -19,6 +19,7 @@ function execute_diagham_script(
         windows_hide::Bool = false,
         env = nothing,
         dir = "",
+        wait::Bool = true,
         kwargs...
     )
     warn_about_diagham_path()
@@ -34,7 +35,7 @@ function execute_diagham_script(
 
     execute = Cmd(split(execute, " "))
     cmd = Cmd(execute; ignorestatus = ignorestatus, detach = detach, windows_verbatim = windows_verbatim, windows_hide = windows_hide, env = env, dir = dir)
-    return run(cmd)
+    return run(cmd; wait = wait)
 end
 
 function diagham_kwarg(key, value)
