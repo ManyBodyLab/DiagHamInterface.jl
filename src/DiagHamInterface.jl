@@ -12,10 +12,8 @@ export write_to_txt
 export write_matrix_elements
 
 using DelimitedFiles
-using Format
 using SparseArrays
 using Preferences
-using ThreadSafeDicts
 
 include("utility/backup.jl")
 include("utility/diagham_path.jl")

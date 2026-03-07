@@ -1,40 +1,26 @@
-# Maps the format string (e.g. "%.5f") to the compiled formatter Function.
-const LOCAL_FORMAT_CACHE = ThreadSafeDict{String, Function}()
-
 """
-    format_with_precision(x; atol=eps(float(T)), mode=:auto, maxdigits=20)
+    format_with_precision(x; atol=0.0, maxdigits=typemax(Int))
 
-Format number `x` as a string with absolute precision `atol`.
-Mode `:auto` uses `%f` for `[1e-3, 1e6)`, else `%e`. Use `:f` or `:e` to force format.
+Format number `x` as a string with absolute precision `atol` and a maximum of 
+`maxdigits` significant digits. 
+Uses scientific notation for very small or large numbers.
 """
-function format_with_precision(x::T; atol = eps(float(T)), mode::Symbol = :auto, maxdigits::Int = 20) where {T <: Real}
+function format_with_precision(x::T; atol = 0.0, maxdigits::Int = typemax(Int)) where {T <: Real}
     iszero(x) && return "0.0"
-    absx = abs(x)
-    abs_atol = abs(atol)
-
-    use_e = mode == :e || (mode == :auto && (absx < 1.0e-3 || absx >= 1.0e6))
-
-    if use_e
-        exp10 = floor(Int, log10(absx))
-        log10_atol = log10(abs_atol)
-        p = ceil(Int, exp10 - log10_atol)
-        p = clamp(p, 0, maxdigits)
-
-        formatter = get_threadsafe_formatter("%.$(p)e")
-        return formatter(x)
-    else
-        p = ceil(Int, -log10(abs_atol))
-        p = clamp(p, 0, maxdigits)
-
-        formatter = get_threadsafe_formatter("%.$(p)f")
-        return formatter(x)
+    
+    if iszero(atol)
+        maxdigits == typemax(Int) && return string(x)
+        return string(round(x, sigdigits=maxdigits))
     end
-end
-
-function get_threadsafe_formatter(fmtstr::String)
-    return get!(LOCAL_FORMAT_CACHE, fmtstr) do
-        Format.generate_formatter(fmtstr)
-    end
+    
+    mag_x = floor(Int, log10(abs(x)))
+    mag_atol = floor(Int, log10(abs(atol)))
+    
+    required_sigdigits = max(1, mag_x - mag_atol + 1)
+    s = min(required_sigdigits, maxdigits)
+    
+    rounded_x = round(x, sigdigits=s)
+    return string(rounded_x)
 end
 
 read_number(V::Number) = V
@@ -64,18 +50,18 @@ function _read_number_bracket(V::AbstractString)
     return ComplexF64(real, imag)
 end
 
-function write_number(V::Number; atol::Real = eps(real(float(V))))
-    return format_with_precision(V; atol = atol)
+function write_number(V::Number; kwargs...)
+    return format_with_precision(V; kwargs...)
 end
 
-function write_number(V::Complex; atol::Real = eps(real(float(V))))
-    return string("(", format_with_precision(real(V); atol = atol), ",", format_with_precision(imag(V); atol = atol), ")")
+function write_number(V::Complex; kwargs...)
+    return string("(", format_with_precision(real(V); kwargs...), ",", format_with_precision(imag(V); kwargs...), ")")
 end
 
-function write_number_space(V::Number; atol::Real = eps(real(float(V))))
-    return format_with_precision(V; atol = atol)
+function write_number_space(V::Number; kwargs...)
+    return format_with_precision(V; kwargs...)
 end
 
-function write_number_space(V::Complex; atol::Real = eps(real(float(V))))
-    return "$(format_with_precision(real(V); atol = atol)) $(format_with_precision(imag(V); atol = atol))"
+function write_number_space(V::Complex; kwargs...)
+    return "$(format_with_precision(real(V); kwargs...)) $(format_with_precision(imag(V); kwargs...))"
 end
