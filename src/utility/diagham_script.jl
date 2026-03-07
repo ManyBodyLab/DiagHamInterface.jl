@@ -5,7 +5,8 @@ Construct a command string for running a DiagHam executable with specified kwarg
 function diagham_command(execute::AbstractString; kwargs...)
     return diagham_command([execute]; kwargs...)
 end
-function diagham_command(execute::AbstractVector{<:AbstractString};
+function diagham_command(
+        execute::AbstractVector{<:AbstractString};
         diagham_path::AbstractString = get_diagham_path(),
         kwargs...
     )
