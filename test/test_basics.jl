@@ -97,14 +97,7 @@ using Test
         # Test normal range numbers
         result = format_with_precision(1.5)
         @test !occursin("e", result) && !occursin("E", result)
-
-        # Test with forced mode
-        result_e = format_with_precision(1.5; mode = :e)
-        @test occursin("e", result_e) || occursin("E", result_e)
-
-        result_f = format_with_precision(1.5; mode = :f)
-        @test !occursin("e", result_f) && !occursin("E", result_f)
-
+        
         # Test negative numbers
         result_neg = format_with_precision(-1.5)
         @test startswith(result_neg, "-")

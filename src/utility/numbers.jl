@@ -7,19 +7,19 @@ Uses scientific notation for very small or large numbers.
 """
 function format_with_precision(x::T; atol = 0.0, maxdigits::Int = typemax(Int)) where {T <: Real}
     iszero(x) && return "0.0"
-    
+
     if iszero(atol)
         maxdigits == typemax(Int) && return string(x)
-        return string(round(x, sigdigits=maxdigits))
+        return string(round(x, sigdigits = maxdigits))
     end
-    
+
     mag_x = floor(Int, log10(abs(x)))
     mag_atol = floor(Int, log10(abs(atol)))
-    
+
     required_sigdigits = max(1, mag_x - mag_atol + 1)
     s = min(required_sigdigits, maxdigits)
-    
-    rounded_x = round(x, sigdigits=s)
+
+    rounded_x = round(x, sigdigits = s)
     return string(rounded_x)
 end
 
