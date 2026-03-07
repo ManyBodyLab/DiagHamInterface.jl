@@ -15,6 +15,7 @@ using DelimitedFiles
 using Format: cfmt
 using SparseArrays
 using Preferences
+using ThreadSafeDicts
 
 include("utility/backup.jl")
 include("utility/diagham_path.jl")

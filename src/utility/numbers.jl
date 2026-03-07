@@ -1,3 +1,6 @@
+# Maps the format string (e.g. "%.5f") to the compiled formatter Function.
+const LOCAL_FORMAT_CACHE = ThreadSafeDict{String, Function}()
+
 """
     format_with_precision(x; atol=eps(float(T)), mode=:auto, maxdigits=20)
 
@@ -5,7 +8,7 @@ Format number `x` as a string with absolute precision `atol`.
 Mode `:auto` uses `%f` for `[1e-3, 1e6)`, else `%e`. Use `:f` or `:e` to force format.
 """
 function format_with_precision(x::T; atol = eps(float(T)), mode::Symbol = :auto, maxdigits::Int = 20) where {T <: Real}
-    x == 0 && return "0.0"
+    iszero(x) && return "0.0"
     absx = abs(x)
     abs_atol = abs(atol)
 
@@ -16,11 +19,21 @@ function format_with_precision(x::T; atol = eps(float(T)), mode::Symbol = :auto,
         log10_atol = log10(abs_atol)
         p = ceil(Int, exp10 - log10_atol)
         p = clamp(p, 0, maxdigits)
-        return cfmt("%.$(p)e", x)
+        
+        formatter = get_threadsafe_formatter("%.$(p)e")
+        return formatter(x)
     else
         p = ceil(Int, -log10(abs_atol))
         p = clamp(p, 0, maxdigits)
-        return cfmt("%.$(p)f", x)
+        
+        formatter = get_threadsafe_formatter("%.$(p)f")
+        return formatter(x)
+    end
+end
+
+function get_threadsafe_formatter(fmtstr::String)
+    return get!(LOCAL_FORMAT_CACHE, fmtstr) do
+        Format.generate_formatter(fmtstr)
     end
 end
 
