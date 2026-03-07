@@ -19,13 +19,13 @@ function format_with_precision(x::T; atol = eps(float(T)), mode::Symbol = :auto,
         log10_atol = log10(abs_atol)
         p = ceil(Int, exp10 - log10_atol)
         p = clamp(p, 0, maxdigits)
-        
+
         formatter = get_threadsafe_formatter("%.$(p)e")
         return formatter(x)
     else
         p = ceil(Int, -log10(abs_atol))
         p = clamp(p, 0, maxdigits)
-        
+
         formatter = get_threadsafe_formatter("%.$(p)f")
         return formatter(x)
     end
