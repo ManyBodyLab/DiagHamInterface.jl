@@ -74,6 +74,22 @@ function format_kinetic(label, indices, coeffs; full_single_particle::Bool = fal
     return label, indices, coeffs
 end
 
+function reorder_label_columns(label, indices)
+    label_priority = h -> begin
+        base = split(h, "_")[1]
+        startswith(base, standard_band_label()) ? (0, base) :
+        startswith(base, standard_valley_label()) ? (1, base) : (2, base)
+    end
+    suffixes = [parse(Int, split(h, "_")[2]) for h in label]
+    perm = Int[]
+    for s in unique(sort(suffixes))
+        pos = findall(x -> suffixes[x] == s, 1:length(label))
+        local_order = sortperm(label[pos], by = label_priority)
+        append!(perm, pos[local_order])
+    end
+    return label[perm], indices[:, perm]
+end
+
 """
     write_matrix_elements(label, indices, coeffs, file_name; dropband=false, full_single_particle=false)
 
@@ -88,6 +104,9 @@ function write_matrix_elements(label, indices, coeffs, file_name::String; dropba
     label, indices, coeffs = drop_bands(label, indices, coeffs; dropband = dropband)
     label, indices, coeffs = relabel_bands(label, indices, coeffs; full_single_particle = full_single_particle)
 
+    if N_body_interaction > 1
+        label, indices = reorder_label_columns(label, indices)
+    end
 
     # Finally store
     fid = open(file_name, "w")

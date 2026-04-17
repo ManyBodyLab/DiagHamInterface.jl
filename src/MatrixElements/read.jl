@@ -57,8 +57,12 @@ function reinstate_indices(header, indices, coeffs) ## This function takes care 
         # positions of headers with suffix s
         pos = findall(x -> suffixes[x] == s, 1:length(header))
         if !isempty(pos)
-            # local order within the group: sort by label string (stable)
-            local_order = sortperm(header[pos])
+            label_priority = h -> begin
+                base = split(h, "_")[1]
+                startswith(base, standard_band_label()) ? (0, base) :
+                startswith(base, standard_valley_label()) ? (1, base) : (2, base)
+            end
+            local_order = sortperm(header[pos], by = label_priority)
             append!(perm, pos[local_order])
         end
     end
