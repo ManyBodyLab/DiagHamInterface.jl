@@ -1,11 +1,11 @@
 """
-    format_with_precision(x; atol=0.0, maxdigits=typemax(Int))
+    format_with_precision(x; atol=eps(float(T)), maxdigits=typemax(Int))
 
 Format number `x` as a string with absolute precision `atol` and a maximum of 
 `maxdigits` significant digits. 
 Uses scientific notation for very small or large numbers.
 """
-function format_with_precision(x::T; atol = 0.0, maxdigits::Int = typemax(Int)) where {T <: Real}
+function format_with_precision(x::T; atol = eps(float(T)), maxdigits::Int = typemax(Int)) where {T <: Real}
     iszero(x) && return "0.0"
 
     if iszero(atol)

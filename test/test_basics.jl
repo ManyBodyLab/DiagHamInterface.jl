@@ -97,7 +97,7 @@ using Test
         # Test normal range numbers
         result = format_with_precision(1.5)
         @test !occursin("e", result) && !occursin("E", result)
-        
+
         # Test negative numbers
         result_neg = format_with_precision(-1.5)
         @test startswith(result_neg, "-")
