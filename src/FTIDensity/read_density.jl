@@ -59,7 +59,7 @@ end
 
 function _determine_type(values::AbstractVector, atol::Real)
     isempty(values) && return Float64
-    any(v -> abs(imag(v)) > atol, values) ? ComplexF64 : Float64
+    return any(v -> abs(imag(v)) > atol, values) ? ComplexF64 : Float64
 end
 
 """
@@ -78,7 +78,7 @@ data. For single-band files Nband=1 and Nspin=1. For files with a `spin` column
 Since FTIDensity only writes diagonal-in-k entries, all off-diagonal-k entries
 are zero.
 """
-function read_one_body_density(filename::AbstractString; atol::Real = 1e-14)
+function read_one_body_density(filename::AbstractString; atol::Real = 1.0e-14)
     is_two_body, has_spin, Ncols_index = _parse_density_header(filename)
     is_two_body && error("File contains two-body density; use read_two_body_density instead")
 
@@ -95,7 +95,7 @@ function read_one_body_density(filename::AbstractString; atol::Real = 1e-14)
     ky_col = index_matrix[:, 2]
     Nkx = maximum(kx_col) + 1
     Nky = maximum(ky_col) + 1
-    Nk  = Nkx * Nky
+    Nk = Nkx * Nky
 
     if Ncols_index == 2
         # 1-band: kx ky val
@@ -115,7 +115,7 @@ function read_one_body_density(filename::AbstractString; atol::Real = 1e-14)
         Nspin = 1
         result = zeros(T, Nk, Nband, Nspin, Nk, Nband, Nspin)
         for (i, val) in enumerate(values)
-            k   = kx_col[i] * Nky + ky_col[i] + 1
+            k = kx_col[i] * Nky + ky_col[i] + 1
             bcr = sigcr_col[i] + 1
             ban = sigan_col[i] + 1
             v = T == Float64 ? real(val) : convert(T, val)
@@ -123,15 +123,15 @@ function read_one_body_density(filename::AbstractString; atol::Real = 1e-14)
         end
     else
         # 4/6-band: kx ky spin sigma_cr sigma_an val
-        spin_col  = index_matrix[:, 3]
+        spin_col = index_matrix[:, 3]
         sigcr_col = index_matrix[:, 4]
         sigan_col = index_matrix[:, 5]
         Nband = maximum(max.(sigcr_col, sigan_col)) + 1
         Nspin = maximum(spin_col) + 1
         result = zeros(T, Nk, Nband, Nspin, Nk, Nband, Nspin)
         for (i, val) in enumerate(values)
-            k   = kx_col[i] * Nky + ky_col[i] + 1
-            s   = spin_col[i] + 1
+            k = kx_col[i] * Nky + ky_col[i] + 1
+            s = spin_col[i] + 1
             bcr = sigcr_col[i] + 1
             ban = sigan_col[i] + 1
             v = T == Float64 ? real(val) : convert(T, val)
@@ -152,7 +152,7 @@ Returns an array of shape `(Nk,Nb,Ns, Nk,Nb,Ns, Nk,Nb,Ns, Nk,Nb,Ns)` where
 `result[k1,b1,s1, k2,b2,s2, k3,b3,s3, k4,b4,s4] = ⟨c†_1 c†_2 c_3 c_4⟩`.
 All indices are 1-based; k is linearized as `k = kx*Nky + ky + 1`.
 """
-function read_two_body_density(filename::AbstractString; atol::Real = 1e-14)
+function read_two_body_density(filename::AbstractString; atol::Real = 1.0e-14)
     is_two_body, has_spin, Ncols_index = _parse_density_header(filename)
     !is_two_body && error("File contains one-body density; use read_one_body_density instead")
 
@@ -168,17 +168,17 @@ function read_two_body_density(filename::AbstractString; atol::Real = 1e-14)
     stride = has_spin ? 4 : 3  # columns per particle: kx, ky, [spin,] sigma
 
     kx_cols = [index_matrix[:, 1 + (p - 1) * stride] for p in 1:4]
-    ky_cols  = [index_matrix[:, 2 + (p - 1) * stride] for p in 1:4]
+    ky_cols = [index_matrix[:, 2 + (p - 1) * stride] for p in 1:4]
     if has_spin
-        spin_cols  = [index_matrix[:, 3 + (p - 1) * stride] for p in 1:4]
+        spin_cols = [index_matrix[:, 3 + (p - 1) * stride] for p in 1:4]
         sigma_cols = [index_matrix[:, 4 + (p - 1) * stride] for p in 1:4]
     else
         sigma_cols = [index_matrix[:, 3 + (p - 1) * stride] for p in 1:4]
     end
 
-    Nkx   = maximum(maximum.(kx_cols)) + 1
-    Nky   = maximum(maximum.(ky_cols)) + 1
-    Nk    = Nkx * Nky
+    Nkx = maximum(maximum.(kx_cols)) + 1
+    Nky = maximum(maximum.(ky_cols)) + 1
+    Nk = Nkx * Nky
     Nband = maximum(maximum.(sigma_cols)) + 1
     Nspin = has_spin ? maximum(maximum.(spin_cols)) + 1 : 1
 
@@ -188,7 +188,7 @@ function read_two_body_density(filename::AbstractString; atol::Real = 1e-14)
         ks = [kx_cols[p][i] * Nky + ky_cols[p][i] + 1 for p in 1:4]
         bs = [sigma_cols[p][i] + 1 for p in 1:4]
         ss = has_spin ? [spin_cols[p][i] + 1 for p in 1:4] : [1, 1, 1, 1]
-        v  = T == Float64 ? real(val) : convert(T, val)
+        v = T == Float64 ? real(val) : convert(T, val)
         result[ks[1], bs[1], ss[1], ks[2], bs[2], ss[2], ks[3], bs[3], ss[3], ks[4], bs[4], ss[4]] = v
     end
 
@@ -213,7 +213,8 @@ For bosons (`statistics=:bose`, commutator `[b,b†]=δ`):
 index semantics `[k1,b1,s1, k3,b3,s3, k2,b2,s2, k4,b4,s4]`.
 """
 function two_body_normal_to_density_density(
-        rho2::Array{T, 12}, rho1::Array{T, 6}; statistics::Symbol = :fermi) where {T}
+        rho2::Array{T, 12}, rho1::Array{T, 6}; statistics::Symbol = :fermi
+    ) where {T}
     coeff = _rho2_permuted_coeff(statistics)
     # Permute rho2: swap particle-2 block (dims 4-6) and particle-3 block (dims 7-9)
     rho_dd = coeff .* permutedims(rho2, [1, 2, 3, 7, 8, 9, 4, 5, 6, 10, 11, 12])
@@ -235,7 +236,8 @@ returned by `two_body_normal_to_density_density`. The returned array has the
 same shape with index semantics `[k1,b1,s1, k2,b2,s2, k3,b3,s3, k4,b4,s4]`.
 """
 function density_density_to_two_body_normal(
-        rho_dd::Array{T, 12}, rho1::Array{T, 6}; statistics::Symbol = :fermi) where {T}
+        rho_dd::Array{T, 12}, rho1::Array{T, 6}; statistics::Symbol = :fermi
+    ) where {T}
     coeff = _rho2_permuted_coeff(statistics)
     # Same permutation: swap particle-2 block (dims 7-9 in rho_dd) and particle-3 block (dims 4-6)
     rho2 = coeff .* permutedims(rho_dd, [1, 2, 3, 7, 8, 9, 4, 5, 6, 10, 11, 12])

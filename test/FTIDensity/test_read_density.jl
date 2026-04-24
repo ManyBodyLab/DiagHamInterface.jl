@@ -52,13 +52,13 @@ end
 @testset "read_one_body_density" begin
     @testset "1-band, 2x2 lattice, real" begin
         content = """# kx ky <c^+ c>
-0 0 0.5
-0 1 0.25
-1 0 0.125
-1 1 0.0625
-# partial density sigma=0 = 0.9375
-# total density = 0.9375
-"""
+        0 0 0.5
+        0 1 0.25
+        1 0 0.125
+        1 1 0.0625
+        # partial density sigma=0 = 0.9375
+        # total density = 0.9375
+        """
         f = write_tmp(content)
         rho = read_one_body_density(f)
 
@@ -78,11 +78,11 @@ end
 
     @testset "2-band, 1x1 lattice, complex" begin
         content = """# kx ky sigma sigma' <c^+ c>
-0 0 0 0 1.0
-0 0 0 1 (0.1,0.2)
-0 0 1 0 (0.1,-0.2)
-0 0 1 1 0.3
-"""
+        0 0 0 0 1.0
+        0 0 0 1 (0.1,0.2)
+        0 0 1 0 (0.1,-0.2)
+        0 0 1 1 0.3
+        """
         f = write_tmp(content)
         rho = read_one_body_density(f)
 
@@ -100,15 +100,15 @@ end
 
     @testset "4-band (spin), 1x1 lattice" begin
         content = """# kx ky spin sigma sigma' <c^+ c>
-0 0 0 0 0 0.8
-0 0 0 0 1 0.0
-0 0 0 1 0 0.0
-0 0 0 1 1 0.2
-0 0 1 0 0 0.6
-0 0 1 0 1 0.0
-0 0 1 1 0 0.0
-0 0 1 1 1 0.4
-"""
+        0 0 0 0 0 0.8
+        0 0 0 0 1 0.0
+        0 0 0 1 0 0.0
+        0 0 0 1 1 0.2
+        0 0 1 0 0 0.6
+        0 0 1 0 1 0.0
+        0 0 1 1 0 0.0
+        0 0 1 1 1 0.4
+        """
         f = write_tmp(content)
         rho = read_one_body_density(f)
 
@@ -128,12 +128,12 @@ end
     @testset "Comment lines interspersed with data" begin
         # DiagHam inserts partial-density comments between data blocks
         content = """# kx ky sigma sigma' <c^+ c>
-0 0 0 0 1.0
-# partial density sigma=0 = (1.0,0.0)
-0 0 1 1 0.5
-# partial density sigma=1 = (0.5,0.0)
-# total density = (1.5,0.0)
-"""
+        0 0 0 0 1.0
+        # partial density sigma=0 = (1.0,0.0)
+        0 0 1 1 0.5
+        # partial density sigma=1 = (0.5,0.0)
+        # total density = (1.5,0.0)
+        """
         f = write_tmp(content)
         rho = read_one_body_density(f)
         @test size(rho) == (1, 2, 1, 1, 2, 1)
@@ -163,9 +163,9 @@ end
         # kx1 ky1 sig1 kx2 ky2 sig2 kx3 ky3 sig3 kx4 ky4 sig4 val
         # Momentum conservation: kx4 = (kx1+kx2-kx3) mod Nkx
         content = """# kx1 ky1 sigma1 kx2 ky2 sigma2 kx3 ky3 sigma3 kx4 ky4 sigma4 <c^+ c^+ c c>
-0 0 0 1 0 1 0 0 0 1 0 1 0.5
-1 0 0 0 0 1 1 0 0 0 0 1 0.25
-"""
+        0 0 0 1 0 1 0 0 0 1 0 1 0.5
+        1 0 0 0 0 1 1 0 0 0 0 1 0.25
+        """
         f = write_tmp(content)
         rho2 = read_two_body_density(f)
 
@@ -208,27 +208,29 @@ end
         # ⟨c†_a c_b c†_b c_a⟩ = δ_{b,b}⟨c†_a c_a⟩ - ⟨c†_a c†_b c_b c_a⟩ = 1·1 - 1 = 0
         # but in rho_dd indices are [k1,b1,s1, k3,b3,s3, k2,b2,s2, k4,b4,s4]
         # i.e. rho_dd[a,b,b,a] = δ_{b,b}⟨c†_a c_a⟩ - rho2[a,b,b,a]
-        @test rho_dd[1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1] ≈ 0.0 atol=1e-14
+        @test rho_dd[1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1] ≈ 0.0 atol = 1.0e-14
 
         # ⟨c†_a c_a c†_b c_b⟩ = δ_{a,a}⟨c†_b... wait, let's use the formula directly:
         # rho_dd[a,a,b,b] = δ_{a,b}⟨c†_... ⟩ - rho2[a,b,a,b]
         # a≠b so δ=0: rho_dd[a,a,b,b] = -rho2[a,b,a,b] = -(-1) = 1
-        @test rho_dd[1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1] ≈ 1.0 atol=1e-14
+        @test rho_dd[1, 1, 1, 1, 1, 1, 2, 1, 1, 2, 1, 1] ≈ 1.0 atol = 1.0e-14
     end
 
     @testset "round-trip: normal → dd → normal" begin
         rho2_rt = density_density_to_two_body_normal(
             two_body_normal_to_density_density(rho2, rho1; statistics = :fermi),
-            rho1; statistics = :fermi)
-        @test rho2_rt ≈ rho2 atol=1e-14
+            rho1; statistics = :fermi
+        )
+        @test rho2_rt ≈ rho2 atol = 1.0e-14
     end
 
     @testset "round-trip: dd → normal → dd" begin
         rho_dd = two_body_normal_to_density_density(rho2, rho1; statistics = :fermi)
         rho_dd_rt = two_body_normal_to_density_density(
             density_density_to_two_body_normal(rho_dd, rho1; statistics = :fermi),
-            rho1; statistics = :fermi)
-        @test rho_dd_rt ≈ rho_dd atol=1e-14
+            rho1; statistics = :fermi
+        )
+        @test rho_dd_rt ≈ rho_dd atol = 1.0e-14
     end
 
     @testset "bosonic sign convention" begin
@@ -242,6 +244,6 @@ end
 
         rho_dd_b = two_body_normal_to_density_density(rho2_bose, rho1_bose; statistics = :bose)
         # rho_dd[a,b,b,a] = δ_{b,b}⟨b†_a b_a⟩ + rho2[a,b,b,a] = 1.5 + 2.0 = 3.5
-        @test rho_dd_b[1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1] ≈ 3.5 atol=1e-14
+        @test rho_dd_b[1, 1, 1, 2, 1, 1, 2, 1, 1, 1, 1, 1] ≈ 3.5 atol = 1.0e-14
     end
 end

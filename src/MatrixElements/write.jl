@@ -78,7 +78,7 @@ function reorder_label_columns(label, indices)
     label_priority = h -> begin
         base = split(h, "_")[1]
         startswith(base, standard_band_label()) ? (0, base) :
-        startswith(base, standard_valley_label()) ? (1, base) : (2, base)
+            startswith(base, standard_valley_label()) ? (1, base) : (2, base)
     end
     suffixes = [parse(Int, split(h, "_")[2]) for h in label]
     perm = Int[]
