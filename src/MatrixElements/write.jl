@@ -42,7 +42,9 @@ function format_kinetic(label, indices, coeffs; full_single_particle::Bool = fal
             ind2 = band_pos[2]
             ind = filter(x -> indices[x, ind1] == indices[x, ind2], eachindex(coeffs))
             if ind != eachindex(coeffs)
-                @warn "Dropping off-diagonal band terms! If this was by mistake, set full_single_particle=true to keep all terms."
+                if inds != findall(!iszero, coeffs)
+                    @warn "Dropping off-diagonal band terms (norm=$(norm(coeffs[setdiff(1:length(coeffs), ind)])))! If this was by mistake, set full_single_particle=true to keep all terms."
+                end
             end
             label = label[setdiff(1:length(label), ind2)]
             indices = indices[ind, :]
